@@ -26,9 +26,10 @@
         android:layout_alignParentTop="false"
         android:layout_alignParentBottom="false"
         android:layout_alignWithParentIfMissing="false"
-        android:textColor="#3c79ea"
+        android:textColor="#ffffff"
         android:onClick="submit"
-        android:layout_below="@+id/radioGroup" />
+        android:layout_below="@+id/radioGroup"
+         />
 
     <EditText
         android:layout_width="match_parent"
@@ -52,17 +53,17 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Male"
             android:id="@+id/maleRadioButton"
-            android:checked="true" />
+            android:checked="true"
+            android:drawableRight="@drawable/male" />
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Female"
             android:id="@+id/femaleRadioButton"
             android:layout_gravity="right"
-            android:checked="false" />
+            android:checked="false"
+            android:drawableRight="@drawable/female" />
 
     </RadioGroup>
 
