@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         editText = (EditText)findViewById(R.id.editText);
         radioGroup = (RadioGroup)findViewById(R.id.radioGroup);
         listView = (ListView)findViewById(R.id.listView);
+        spinner = (Spinner)findViewById(R.id.spinner);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setupListView();
+        setupSpinner();
     }
 
     private void setupListView()
