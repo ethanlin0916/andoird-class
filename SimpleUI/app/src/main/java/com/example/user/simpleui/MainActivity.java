@@ -1,11 +1,13 @@
 package com.example.user.simpleui;
 
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -13,11 +15,14 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    final static int REQUEST_CODE_DRINK_MENU_ACTIVITY = 0;
 
     TextView textView;
     EditText editText;
@@ -58,6 +63,15 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Order order = (Order) parent.getAdapter().getItem(position);
+                Snackbar.make(parent, "You click on" + order.note, Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -103,7 +117,25 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent();
         intent.setClass(this, DrinkMenuActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_CODE_DRINK_MENU_ACTIVITY);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_CODE_DRINK_MENU_ACTIVITY)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                Toast.makeText(this, "Done", Toast.LENGTH_LONG).show();
+            }
+
+            if(resultCode == RESULT_CANCELED)
+            {
+                Toast.makeText(this, "Canceled", Toast.LENGTH_LONG).show();
+            }
+        }
+
     }
 
     @Override
