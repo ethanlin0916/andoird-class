@@ -8,9 +8,14 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.NumberPicker;
+import android.widget.RadioGroup;
 
 
 /**
@@ -22,16 +27,18 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class DrinkOrderDialog extends DialogFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    static final  String DRINK_RARAM = "dirnk";
+
+    Drink drink;
 
     private OnDrinkOrderListener mListener;
+
+    NumberPicker mediumNumberPicker;
+    NumberPicker largeNumberPicker;
+    RadioGroup iceRadioGroup;
+    RadioGroup sugarRadioGroup;
+    EditText noteEditText;
 
     public DrinkOrderDialog() {
         // Required empty public constructor
@@ -43,19 +50,18 @@ public class DrinkOrderDialog extends DialogFragment {
      * @return A new instance of fragment DrinkOrderDialog.
      */
     // TODO: Rename and change types and number of parameters
-    public static DrinkOrderDialog newInstance() {
+    public static DrinkOrderDialog newInstance(Drink drink) {
         DrinkOrderDialog fragment = new DrinkOrderDialog();
         Bundle args = new Bundle();
+
+        args.putParcelable(DRINK_RARAM, drink);
+
         fragment.setArguments(args);
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-    }
+
+
 
     /*@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,11 +70,12 @@ public class DrinkOrderDialog extends DialogFragment {
         return inflater.inflate(R.layout.fragment_drink_order_dialog, container, false);
     }
 */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if(getArguments() != null)
         {
-
+            drink = getArguments().getParcelable(DRINK_RARAM);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -89,6 +96,18 @@ public class DrinkOrderDialog extends DialogFragment {
                         
                     }
                 });
+
+        mediumNumberPicker = (NumberPicker)content.findViewById(R.id.mediumNumberPicker);
+        largeNumberPicker = (NumberPicker)content.findViewById(R.id.largeNumberPicker);
+        iceRadioGroup = (RadioGroup)content.findViewById(R.id.iceRadioGroup);
+        sugarRadioGroup = (RadioGroup)content.findViewById(R.id.sugarRadioGroup);
+        noteEditText = (EditText)content.findViewById(R.id.noteEditText);
+
+        mediumNumberPicker.setMaxValue(100);
+        mediumNumberPicker.setMinValue(0);
+
+        largeNumberPicker.setMaxValue(100);
+        largeNumberPicker.setMinValue(0);
 
         return builder.create();
     }
