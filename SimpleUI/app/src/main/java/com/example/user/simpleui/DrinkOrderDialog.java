@@ -83,7 +83,7 @@ public class DrinkOrderDialog extends DialogFragment {
         View content = getActivity().getLayoutInflater().inflate(R.layout.fragment_drink_order_dialog, null);
 
         builder.setView(content)
-                .setTitle("Hello Dialog")
+                .setTitle(drink.name)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -93,7 +93,7 @@ public class DrinkOrderDialog extends DialogFragment {
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        
+
                     }
                 });
 
