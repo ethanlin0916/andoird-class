@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 
@@ -30,7 +31,7 @@ public class DrinkOrderDialog extends DialogFragment {
 
     static final  String DRINK_RARAM = "dirnk";
 
-    Drink drink;
+    DrinkOrder drinkOrder;
 
     private OnDrinkOrderListener mListener;
 
@@ -50,11 +51,11 @@ public class DrinkOrderDialog extends DialogFragment {
      * @return A new instance of fragment DrinkOrderDialog.
      */
     // TODO: Rename and change types and number of parameters
-    public static DrinkOrderDialog newInstance(Drink drink) {
+    public static DrinkOrderDialog newInstance(DrinkOrder drinkOrder) {
         DrinkOrderDialog fragment = new DrinkOrderDialog();
         Bundle args = new Bundle();
 
-        args.putParcelable(DRINK_RARAM, drink);
+        args.putParcelable(DRINK_RARAM, drinkOrder);
 
         fragment.setArguments(args);
         return fragment;
@@ -75,7 +76,7 @@ public class DrinkOrderDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         if(getArguments() != null)
         {
-            drink = getArguments().getParcelable(DRINK_RARAM);
+            drinkOrder= getArguments().getParcelable(DRINK_RARAM);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -83,33 +84,80 @@ public class DrinkOrderDialog extends DialogFragment {
         View content = getActivity().getLayoutInflater().inflate(R.layout.fragment_drink_order_dialog, null);
 
         builder.setView(content)
-                .setTitle(drink.name)
+                .setTitle(drinkOrder.drink.name)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        drinkOrder.lNumber = largeNumberPicker.getValue();
+                        drinkOrder.mNumber = mediumNumberPicker.getValue();
+                        drinkOrder.ice = getSelectedItemFromRadioGroup(iceRadioGroup);
+                        drinkOrder.sugar = getSelectedItemFromRadioGroup(sugarRadioGroup);
+                        drinkOrder.note = noteEditText.getText().toString();
 
+                        if(mListener != null)
+                        {
+                            mListener.onDrinkOrderFinished(drinkOrder);
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
+
                     }
                 });
 
         mediumNumberPicker = (NumberPicker)content.findViewById(R.id.mediumNumberPicker);
-        largeNumberPicker = (NumberPicker)content.findViewById(R.id.largeNumberPicker);
+        largeNumberPicker = (NumberPicker) content.findViewById(R.id.largeNumberPicker);
         iceRadioGroup = (RadioGroup)content.findViewById(R.id.iceRadioGroup);
         sugarRadioGroup = (RadioGroup)content.findViewById(R.id.sugarRadioGroup);
         noteEditText = (EditText)content.findViewById(R.id.noteEditText);
 
         mediumNumberPicker.setMaxValue(100);
         mediumNumberPicker.setMinValue(0);
+        mediumNumberPicker.setValue(drinkOrder.mNumber);
 
         largeNumberPicker.setMaxValue(100);
         largeNumberPicker.setMinValue(0);
+        largeNumberPicker.setValue(drinkOrder.lNumber);
+
+        noteEditText.setText(drinkOrder.note);
+
+        setSelectedItemInRadioGroup(drinkOrder.ice, iceRadioGroup);
+
+        setSelectedItemInRadioGroup(drinkOrder.sugar, sugarRadioGroup);
+
 
         return builder.create();
+    }
+
+    private void setSelectedItemInRadioGroup(String selectedItem, RadioGroup radioGroup)
+    {
+        int count = radioGroup.getChildCount();
+        for(int i = 0 ; i < count ; i++)
+        {
+            View view = radioGroup.getChildAt(i);
+            if (view instanceof RadioButton)
+            {
+                RadioButton radioButton = (RadioButton)view;
+                if(radioButton.getText().toString().equals(selectedItem))
+                {
+                    radioButton.setChecked(true);
+                }
+                else
+                {
+                    radioButton.setChecked(false);
+                }
+            }
+        }
+    }
+
+    private String getSelectedItemFromRadioGroup(RadioGroup radioGroup)
+    {
+        int radioButtonID = radioGroup.getCheckedRadioButtonId();
+        RadioButton button = (RadioButton)radioGroup.findViewById(radioButtonID);
+        return button.getText().toString();
     }
 
     @Override
@@ -141,6 +189,6 @@ public class DrinkOrderDialog extends DialogFragment {
      */
     public interface OnDrinkOrderListener {
         // TODO: Update argument type and name
-        void onDrinkOrderFinished(Uri uri);
+        void onDrinkOrderFinished(DrinkOrder drinkOrder);
     }
 }

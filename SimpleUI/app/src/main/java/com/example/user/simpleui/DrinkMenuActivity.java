@@ -26,8 +26,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
     int[] images = new int[]{R.drawable.drink1, R.drawable.drink4, R.drawable.drink3, R.drawable.drink2};
 
     List<Drink> drinkList = new ArrayList<>();
-
-    List<Drink> drinkOrderList = new ArrayList<>();
+    ArrayList<DrinkOrder> drinkOrderList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +37,10 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
         totalTextView = (TextView)findViewById(R.id.totalTextView);
 
         setData();
+
+        drinkOrderList = getIntent().getParcelableArrayListExtra("drinkOrderList");
+        setupTotalTextView();
+
         setupDrinkMenuListView();
 
         Log.d("debug", "DrinkMenuActivity OnCreate");
@@ -62,9 +65,9 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
     public void  setupTotalTextView()
     {
         int total = 0;
-        for (Drink drink :drinkOrderList)
+        for (DrinkOrder drinkOrder :drinkOrderList)
         {
-            total += drink.mPrice;
+            total += drinkOrder.total();
         }
 
         totalTextView.setText(String.valueOf(total));
@@ -73,6 +76,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
     public void done(View view)
     {
         Intent intent = new Intent();
+        intent.putExtra("results", drinkOrderList);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -138,18 +142,40 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
 
     private void  showDrinkOrderDialog(Drink drink)
     {
+        DrinkOrder order = new DrinkOrder(drink);
+        for(DrinkOrder drinkOrder: drinkOrderList)
+        {
+            if(drinkOrder.drink.name.equals(drink.name))
+            {
+                order = drinkOrder;
+                break;
+            }
+        }
+
         FragmentManager fragmentManager = getFragmentManager();
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
 
-        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance(drink);
+        DrinkOrderDialog dialog = DrinkOrderDialog.newInstance(order);
 
         dialog.show(ft, "DrinkOrderDialog");
 
     }
 
     @Override
-    public void onDrinkOrderFinished(Uri uri) {
+    public void onDrinkOrderFinished(DrinkOrder drinkOrder)
+    {
+        for (int i = 0; i < drinkOrderList.size(); i++)
+        {
+            if(drinkOrderList.get(i).drink.name.equals(drinkOrder.drink.name))
+            {
+                drinkOrderList.set(i, drinkOrder);
+                setupTotalTextView();
+                return;
+            }
+        }
 
+        drinkOrderList.add(drinkOrder);
+        setupTotalTextView();
     }
 }
