@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 /**
  * Created by user on 2016/8/1.
@@ -22,10 +24,11 @@ public class DrinkOrder extends ParseObject implements Parcelable {
 
     public DrinkOrder(Drink drink)
     {
+        super();
         this.setDrink(drink);
     }
 
-
+    public DrinkOrder(){super();}
 
     Drink drink;
     int lNumber = 0;
@@ -36,7 +39,8 @@ public class DrinkOrder extends ParseObject implements Parcelable {
 
     public int total()
     {
-        return drink.lPrice * lNumber + drink.mPrice * mNumber;
+//        return 0;
+        return getDrink().getlPrice() * getlNumber() + getDrink().getmPrice() * getmNumber();
     }
 
     @Override
@@ -65,7 +69,8 @@ public class DrinkOrder extends ParseObject implements Parcelable {
     }
 
     protected DrinkOrder(Parcel in) {
-        this.setDrink(in.readParcelable(Drink.class.getClassLoader()));
+        super();
+        this.setDrink((Drink)in.readParcelable(Drink.class.getClassLoader()));
         this.setmNumber(in.readInt());
         this.setlNumber(in.readInt());
         this.setIce(in.readString());
@@ -81,7 +86,10 @@ public class DrinkOrder extends ParseObject implements Parcelable {
             {
                 return new DrinkOrder(source);
             }
-            return new DrinkOrder(source);
+            else
+            {
+                return getDrinkOrderFromCache(source.readString());
+            }
         }
 
         @Override
@@ -91,7 +99,7 @@ public class DrinkOrder extends ParseObject implements Parcelable {
     };
 
     public Drink getDrink() {
-        return getParseObject(DRINK_COL);
+        return (Drink)getParseObject(DRINK_COL);
     }
 
     public void setDrink(Drink drink) {
@@ -136,5 +144,18 @@ public class DrinkOrder extends ParseObject implements Parcelable {
 
     public void setSugar(String sugar) {
         put(SUGAR_COL, sugar);
+    }
+
+    public static ParseQuery<DrinkOrder> getQuery() {return ParseQuery.getQuery(DrinkOrder.class);}
+
+    public static DrinkOrder getDrinkOrderFromCache(String objectId)
+    {
+        try {
+            DrinkOrder drinkOrder = getQuery().fromLocalDatastore().get(objectId);
+            return drinkOrder;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return DrinkOrder.createWithoutData(DrinkOrder.class, objectId);
     }
 }

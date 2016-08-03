@@ -12,6 +12,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,14 +44,25 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
         drinkOrderList = getIntent().getParcelableArrayListExtra("drinkOrderList");
         setupTotalTextView();
 
-        setupDrinkMenuListView();
+        //setupDrinkMenuListView();
 
         Log.d("debug", "DrinkMenuActivity OnCreate");
     }
 
     public void setData()
     {
-        for(int i = 0; i < 4; i++)
+        Drink.getDrinkFromLocamThenRemote(new FindCallback<Drink>() {
+            @Override
+            public void done(List<Drink> objects, ParseException e) {
+                if (e == null)
+                {
+                    drinkList = objects;
+                    setupDrinkMenuListView();
+                }
+            }
+        });
+
+        /*        for(int i = 0; i < 4; i++)
         {
             Drink drink = new Drink();
             drink.name = drinkNames[i];
@@ -56,7 +70,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
             drink.mPrice = mPrices[i];
             drink.imageId = images[i];
             drinkList.add(drink);
-        }
+        }*/
 
     }
 
@@ -145,7 +159,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
         DrinkOrder order = new DrinkOrder(drink);
         for(DrinkOrder drinkOrder: drinkOrderList)
         {
-            if(drinkOrder.drink.name.equals(drink.name))
+            if(drinkOrder.getDrink().getObjectId().equals(drink.getObjectId()))
             {
                 order = drinkOrder;
                 break;
@@ -167,7 +181,7 @@ public class DrinkMenuActivity extends AppCompatActivity implements DrinkOrderDi
     {
         for (int i = 0; i < drinkOrderList.size(); i++)
         {
-            if(drinkOrderList.get(i).drink.name.equals(drinkOrder.drink.name))
+            if(drinkOrderList.get(i).getDrink().getObjectId().equals(drinkOrder.getDrink().getObjectId()))
             {
                 drinkOrderList.set(i, drinkOrder);
                 setupTotalTextView();
