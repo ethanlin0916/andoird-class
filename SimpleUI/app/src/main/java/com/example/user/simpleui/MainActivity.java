@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Order order = (Order) parent.getAdapter().getItem(position);
-                Snackbar.make(parent, "You click on" + order.getNote(), Toast.LENGTH_LONG).show();
+                goToOrderDetail(order);
+//                Snackbar.make(parent, "You click on" + order.getNote(), Toast.LENGTH_LONG).show();
 
             }
         });
@@ -173,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 if (e == null)
                 {
                     orders = objects;
-                    Order.pinAllInBackground("Order", objects);
                     setupListView();
                 }
             }
@@ -227,6 +227,14 @@ public class MainActivity extends AppCompatActivity {
         intent.setClass(this, DrinkMenuActivity.class);
         intent.putExtra("drinkOrderList", drinkOrders);
         startActivityForResult(intent, REQUEST_CODE_DRINK_MENU_ACTIVITY);
+    }
+
+    public void goToOrderDetail(Order order)
+    {
+        Intent intent = new Intent();
+        intent.setClass(this, OrderDetailActivity.class);
+        intent.putExtra("order", order);
+        startActivity(intent);
     }
 
     @Override
